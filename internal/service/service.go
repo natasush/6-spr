@@ -2,21 +2,27 @@ package service
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/pkg/morse"
 )
 
-func Convert(sm string) (string, error) {
-	if len(sm) == 0 {
+// конвертация текст или азбука морзе
+func Convert(str string) (string, error) {
+	if len(str) == 0 {
 		return "", errors.New("empty string")
 	}
-	var res string
-	for _, ch := range sm {
-		if ch != '.' && ch != '-' && ch != ' ' {
-			res = morse.ToMorse(sm)
-		} else {
-			res = morse.ToText(sm)
-		}
-	}
+	res := StringOrMorse(str)
 	return res, nil
+}
+
+// проверка текст или морзе
+func StringOrMorse(sm string) string {
+	if strings.ContainsFunc(sm, func(r rune) bool {
+		return r != '-' && r != '.' && !strings.ContainsRune(" \t\n", r)
+	}) {
+		return morse.ToMorse(sm)
+	}
+	return morse.ToText(sm)
+
 }
